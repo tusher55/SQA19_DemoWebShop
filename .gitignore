@@ -1,0 +1,15 @@
+node_modules/
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+blob-report/
+playwright/.cache/
+screenshots/*.png
+!screenshots/.gitkeep
+api-tests/newman-report.html
+.DS_Store
+*.log
+.env
+.env.*
+!/.env.example

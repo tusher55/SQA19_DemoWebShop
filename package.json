@@ -1,0 +1,26 @@
+{
+  "name": "sqa19-demowebshop",
+  "version": "1.0.0",
+  "description": "SQA 19 — Demo Web Shop UI (Playwright POM) + API (Postman/Newman)",
+  "author": "Tusher Dhali",
+  "license": "ISC",
+  "scripts": {
+    "test": "playwright test",
+    "test:q1": "playwright test tests/q1-invalid-login.spec.js",
+    "test:q2": "playwright test tests/q2-register-add-to-cart.spec.js",
+    "test:q3": "playwright test tests/q3-search-checkout-e2e.spec.js",
+    "test:ui": "playwright test tests/",
+    "test:headed": "playwright test --headed",
+    "test:api": "newman run api-tests/jsonplaceholder-users.postman_collection.json -r cli,htmlextra --reporter-htmlextra-export api-tests/newman-report.html || newman run api-tests/jsonplaceholder-users.postman_collection.json",
+    "test:all": "npm run test:ui && npm run test:api",
+    "report": "playwright show-report",
+    "allure:generate": "allure generate ./allure-results -o ./allure-report --clean",
+    "allure:open": "allure open ./allure-report",
+    "allure:serve": "python3 -m http.server 8080 --directory allure-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "allure-playwright": "^3.4.1",
+    "dotenv": "^17.2.3"
+  }
+}
