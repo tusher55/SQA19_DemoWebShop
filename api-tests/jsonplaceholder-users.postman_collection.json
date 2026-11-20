@@ -1,0 +1,135 @@
+{
+  "info": {
+    "name": "SQA19 JSONPlaceholder Users API",
+    "description": "Part C — GET users, save ID, PUT update name/email/company.name with dynamic data",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. GET all users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const users = pm.response.json();",
+              "",
+              "pm.test('Response is a non-empty array', function () {",
+              "  pm.expect(users).to.be.an('array').that.is.not.empty;",
+              "});",
+              "",
+              "pm.test('Response contains user information', function () {",
+              "  pm.expect(users[0]).to.be.an('object');",
+              "  pm.expect(users[0]).to.have.property('username');",
+              "});",
+              "",
+              "pm.test('Each user has id, name, and email', function () {",
+              "  users.forEach(function (user) {",
+              "    pm.expect(user).to.have.property('id');",
+              "    pm.expect(user).to.have.property('name');",
+              "    pm.expect(user).to.have.property('email');",
+              "  });",
+              "});",
+              "",
+              "const selected = users[0];",
+              "pm.collectionVariables.set('userId', String(selected.id));",
+              "pm.collectionVariables.set('originalPhone', selected.phone || 'N/A');",
+              "console.log('Saved userId =', selected.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/users",
+          "protocol": "https",
+          "host": ["jsonplaceholder", "typicode", "com"],
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "2. PUT update user by saved ID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const stamp = Date.now();",
+              "pm.collectionVariables.set('updatedName', 'Tusher Updated ' + stamp);",
+              "pm.collectionVariables.set('updatedEmail', 'tusher.updated.' + stamp + '@example.com');",
+              "pm.collectionVariables.set('updatedCompany', 'SQA19 Company ' + stamp);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "const expectedId = Number(pm.collectionVariables.get('userId'));",
+              "const expectedName = pm.collectionVariables.get('updatedName');",
+              "",
+              "pm.test('Returned ID matches saved ID variable', function () {",
+              "  pm.expect(body.id).to.eql(expectedId);",
+              "});",
+              "",
+              "pm.test('Phone should not be empty', function () {",
+              "  pm.expect(body.phone).to.exist;",
+              "  pm.expect(String(body.phone).trim()).to.not.equal('');",
+              "});",
+              "",
+              "pm.test('Returned name matches updated name', function () {",
+              "  pm.expect(body.name).to.eql(expectedName);",
+              "});",
+              "",
+              "pm.test('Email and company.name were updated', function () {",
+              "  pm.expect(body.email).to.eql(pm.collectionVariables.get('updatedEmail'));",
+              "  pm.expect(body.company.name).to.eql(pm.collectionVariables.get('updatedCompany'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{userId}},\n  \"name\": \"{{updatedName}}\",\n  \"email\": \"{{updatedEmail}}\",\n  \"phone\": \"{{originalPhone}}\",\n  \"company\": {\n    \"name\": \"{{updatedCompany}}\"\n  }\n}"
+        },
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/users/{{userId}}",
+          "protocol": "https",
+          "host": ["jsonplaceholder", "typicode", "com"],
+          "path": ["users", "{{userId}}"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "userId", "value": "" },
+    { "key": "originalPhone", "value": "" },
+    { "key": "updatedName", "value": "" },
+    { "key": "updatedEmail", "value": "" },
+    { "key": "updatedCompany", "value": "" }
+  ]
+}
